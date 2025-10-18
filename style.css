@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
+
+:root {
+  --light-bg: #ffffff;
+  --dark-bg: #171717;
+  --light-card: #f9fafb;
+  --dark-card: #1e1e1e;
+  --accent-yellow: #facc15;
+  --accent-red: #ef4444;
+  --text-dark: #111827;
+  --text-light: #e5e7eb;
+}
+
+body {
+  font-family: 'Sarabun', sans-serif;
+  background-color: var(--light-bg);
+  color: var(--text-dark);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* 🌙 Dark Mode */
+.dark body {
+  background-color: var(--dark-bg);
+  color: var(--text-light);
+}
+
+/* 🔹 Container */
+.container {
+  max-width: 1000px;
+}
+
+/* 🧭 Header */
+header {
+  background-color: var(--light-card);
+  border-bottom: 1px solid #ddd;
+}
+
+.dark header {
+  background-color: var(--dark-card);
+  border-bottom: 1px solid #333;
+}
+
+/* ⚙️ Card Box */
+.card {
+  background-color: var(--light-card);
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  padding: 1.5rem;
+}
+
+.card:hover {
+  transform: scale(1.01);
+}
+
+.dark .card {
+  background-color: var(--dark-card);
+  border: 1px solid #333;
+}
+
+/* 💰 Balance */
+.balance {
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.balance.positive {
+  color: #16a34a;
+}
+
+.balance.negative {
+  color: #ef4444;
+}
+
+/* 📋 Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  font-weight: 600;
+}
+
+.dark th, .dark td {
+  border-color: #333;
+}
+
+/* ✏️ Input & Form */
+input, select, textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #111;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-yellow);
+  outline: none;
+}
+
+.dark input, .dark select, .dark textarea {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  color: var(--text-light);
+}
+
+/* 🔘 Buttons */
+.btn {
+  display: inline-block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.btn-yellow {
+  background-color: var(--accent-yellow);
+  color: #111;
+}
+
+.btn-yellow:hover {
+  background-color: #fde047;
+}
+
+.btn-red {
+  background-color: var(--accent-red);
+  color: #fff;
+}
+
+.btn-red:hover {
+  background-color: #f87171;
+}
+
+/* 🌗 Toggle Button */
+#toggleMode {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.dark #toggleMode {
+  background: #2d2d2d;
+  border-color: #444;
+  color: var(--text-light);
+}
+
+/* 📱 Responsive */
+@media (max-width: 640px) {
+  .balance { font-size: 1.8rem; }
+  th, td { font-size: 0.9rem; }
+}

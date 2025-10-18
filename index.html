@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K3M Finance Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="w-full p-4 flex justify-between items-center">
+    <h1 class="text-lg font-bold">💼 ระบบบันทึกเงิน | K3M Production</h1>
+    <button id="toggleMode">🌙 โหมดมืด</button>
+  </header>
+
+  <main class="container mx-auto px-4 py-6 space-y-8">
+
+    <!-- 💰 ยอดคงเหลือ -->
+    <section class="text-center">
+      <h2 class="text-lg font-semibold mb-2">ยอดเงินคงเหลือ</h2>
+      <p id="balanceText" class="balance">กำลังโหลด...</p>
+    </section>
+
+    <!-- 📜 ประวัติธุรกรรม -->
+    <section class="card">
+      <h3 class="font-bold mb-3">📜 ประวัติธุรกรรมล่าสุด</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>วันที่</th>
+            <th>ชื่อ</th>
+            <th>ประเภท</th>
+            <th>จำนวนเงิน</th>
+            <th>รายละเอียด</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </section>
+
+    <!-- 👥 สรุปยอดรายบุคคล -->
+    <section class="card">
+      <h3 class="font-bold mb-3">👥 สรุปยอดรายบุคคล</h3>
+      <div id="personSummary" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+    </section>
+
+    <!-- ➕ ฟอร์มเพิ่มเงิน -->
+    <section class="card">
+      <h3 class="font-bold mb-3 text-yellow-600">เพิ่มเงินเข้า</h3>
+      <form id="incomeForm" class="space-y-3">
+        <select id="incomeName">
+          <option value="">-- เลือกผู้เพิ่มเงิน --</option>
+          <option>คุณานนต์ มนตรีกานนท์ ()</option>
+          <option>นนท์วริศ ภิญโญหิรัญรัตน์ ()</option>
+          <option>นพอัปสร อ้นทอง ()</option>
+          <option>นันธิดา น้อยพันธ์ ()</option>
+          <option>พัชรนันท์ วิโรจน์ชีวัน ()</option>
+          <option>พิธานนท์ น่วมเศรษฐี ()</option>
+          <option>รัชศักดิ์ ชลอุดมกุล ()</option>
+          <option>วรพล ผลอินทร์ ()</option>
+          <option>อิทธิฤทธิ์ กุนศิริ (มิกซ์)</option>
+        </select>
+        <input type="number" id="incomeAmount" placeholder="จำนวนเงิน (บาท)">
+        <textarea id="incomeDesc" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+        <input type="file" id="incomeImage" accept="image/*">
+        <button type="submit" class="btn btn-yellow">บันทึกเงินเข้า</button>
+      </form>
+    </section>
+
+    <!-- ➖ ฟอร์มเอาเงินออก -->
+    <section class="card">
+      <h3 class="font-bold mb-3 text-red-500">เอาเงินออก</h3>
+      <form id="expenseForm" class="space-y-3">
+        <select id="expenseName">
+          <option value="">-- เลือกผู้ใช้เงิน --</option>
+          <option>คุณานนต์ มนตรีกานนท์ ()</option>
+          <option>นนท์วริศ ภิญโญหิรัญรัตน์ ()</option>
+          <option>นพอัปสร อ้นทอง ()</option>
+          <option>นันธิดา น้อยพันธ์ ()</option>
+          <option>พัชรนันท์ วิโรจน์ชีวัน ()</option>
+          <option>พิธานนท์ น่วมเศรษฐี ()</option>
+          <option>รัชศักดิ์ ชลอุดมกุล ()</option>
+          <option>วรพล ผลอินทร์ ()</option>
+          <option>อิทธิฤทธิ์ กุนศิริ (มิกซ์)</option>
+        </select>
+        <input type="number" id="expenseAmount" placeholder="จำนวนเงิน (บาท)">
+        <textarea id="expenseDesc" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+        <input type="file" id="expenseImage" accept="image/*">
+        <button type="submit" class="btn btn-red">บันทึกเงินออก</button>
+      </form>
+    </section>
+
+  </main>
+
+  <footer class="text-center py-4 text-gray-500 dark:text-gray-400 border-t">
+    © 2025 K3M Production
+  </footer>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqbNPHG6xLiLJQ8Zgvm60s7PQcSahobKl4YpXWIN1ceOcZd5j-lbKhKJ6tbY2Y49FEdw/exec"; // ใส่ URL Apps Script
+
+    // 🌗 Dark/Light Toggle
+    const toggleBtn = document.getElementById("toggleMode");
+    toggleBtn.addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark");
+      toggleBtn.textContent = document.documentElement.classList.contains("dark") ? "☀️ โหมดสว่าง" : "🌙 โหมดมืด";
+    });
+
+    async function loadSummary() {
+      const res = await fetch(SCRIPT_URL + "?action=getSummary");
+      const data = await res.json();
+      const balance = (data.income || 0) - (data.expense || 0);
+      const balanceEl = document.getElementById("balanceText");
+      balanceEl.textContent = balance.toLocaleString() + " บาท";
+      balanceEl.className = "balance " + (balance >= 0 ? "positive" : "negative");
+
+      const summaryDiv = document.getElementById("personSummary");
+      summaryDiv.innerHTML = "";
+      Object.entries(data.persons || {}).forEach(([name, total]) => {
+        const color = total >= 0 ? "text-green-600" : "text-red-500";
+        summaryDiv.innerHTML += `<div class="border p-2 rounded text-sm flex justify-between dark:border-gray-700">
+          <span>${name}</span><span class="${color}">${total.toLocaleString()} บาท</span>
+        </div>`;
+      });
+    }
+
+    async function loadHistory() {
+      const res = await fetch(SCRIPT_URL + "?action=getHistory");
+      const data = await res.json();
+      const body = document.getElementById("historyBody");
+      body.innerHTML = "";
+      data.slice(0, 10).forEach(row => {
+        const color = row.type === "เงินเข้า" ? "text-green-600" : "text-red-500";
+        body.innerHTML += `
+          <tr>
+            <td>${row.date}</td>
+            <td>${row.name}</td>
+            <td class="${color}">${row.type}</td>
+            <td>${Number(row.amount).toLocaleString()}</td>
+            <td>${row.desc}</td>
+          </tr>`;
+      });
+    }
+
+    async function submitForm(formId, actionType) {
+      const name = document.getElementById(formId + "Name").value;
+      const amount = document.getElementById(formId + "Amount").value;
+      const desc = document.getElementById(formId + "Desc").value;
+      const file = document.getElementById(formId + "Image").files[0];
+
+      if (!name || !amount) return alert("กรุณากรอกข้อมูลให้ครบ");
+
+      const formData = new FormData();
+      formData.append("action", actionType);
+      formData.append("personName", name);
+      formData.append("amount", amount);
+      formData.append("description", desc);
+      if (file) formData.append("image", file);
+
+      const res = await fetch(SCRIPT_URL, { method: "POST", body: formData });
+      const result = await res.json();
+
+      if (result.result === "success") {
+        alert("✅ บันทึกสำเร็จ!");
+        loadSummary();
+        loadHistory();
+      } else alert("❌ " + result.message);
+    }
+
+    document.getElementById("incomeForm").onsubmit = e => { e.preventDefault(); submitForm("income", "addIncome"); };
+    document.getElementById("expenseForm").onsubmit = e => { e.preventDefault(); submitForm("expense", "addExpense"); };
+
+    loadSummary();
+    loadHistory();
+  </script>
+</body>
+</html>
