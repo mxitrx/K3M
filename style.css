@@ -159,25 +159,6 @@ input:focus, select:focus, textarea:focus {
   color: var(--text-light);
 }
 
-/* 📱 Responsive */
-@media (max-width: 640px) {
-  .balance { font-size: 1.8rem; }
-  th, td { font-size: 0.9rem; }
-}
-
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
-
-:root {
-  --light-bg: #ffffff;
-  --dark-bg: #171717;
-  --light-card: #f9fafb;
-  --dark-card: #1f1f1f;
-  --accent-yellow: #facc15;
-  --accent-red: #ef4444;
-  --text-dark: #111827;
-  --text-light: #f3f4f6;
-}
-
 body {
   font-family: 'Sarabun', sans-serif;
   background-color: var(--light-bg);
@@ -222,7 +203,7 @@ header {
 /* Input + Select + Textarea */
 input, select, textarea {
   width: 100%;
-  padding: 10px 0.75rem;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background: #fff;
