@@ -96,11 +96,12 @@ th {
 /* ✏️ Input & Form */
 input, select, textarea {
   width: 100%;
-  padding: 0.5rem 0.75rem;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #fff;
   color: #111;
+  margin-bottom: 10px;
 }
 
 input:focus, select:focus, textarea:focus {
@@ -162,4 +163,150 @@ input:focus, select:focus, textarea:focus {
 @media (max-width: 640px) {
   .balance { font-size: 1.8rem; }
   th, td { font-size: 0.9rem; }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
+
+:root {
+  --light-bg: #ffffff;
+  --dark-bg: #171717;
+  --light-card: #f9fafb;
+  --dark-card: #1f1f1f;
+  --accent-yellow: #facc15;
+  --accent-red: #ef4444;
+  --text-dark: #111827;
+  --text-light: #f3f4f6;
+}
+
+body {
+  font-family: 'Sarabun', sans-serif;
+  background-color: var(--light-bg);
+  color: var(--text-dark);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dark body {
+  background-color: var(--dark-bg);
+  color: var(--text-light);
+}
+
+/* Header */
+header {
+  background-color: var(--light-card);
+  border-bottom: 1px solid #e5e7eb;
+}
+.dark header {
+  background-color: var(--dark-card);
+  border-bottom: 1px solid #333;
+}
+
+/* Container */
+.container {
+  max-width: 1100px;
+  width: 100%;
+}
+
+/* Card Box */
+.card {
+  background-color: var(--light-card);
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+.dark .card {
+  background-color: var(--dark-card);
+  border-color: #333;
+}
+
+/* Input + Select + Textarea */
+input, select, textarea {
+  width: 100%;
+  padding: 10px 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #111;
+}
+.dark input, .dark select, .dark textarea {
+  background: #2d2d2d;
+  border-color: #444;
+  color: var(--text-light);
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent-yellow);
+}
+
+/* Buttons */
+.btn {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.btn-yellow {
+  background: var(--accent-yellow);
+  color: #000;
+}
+.btn-yellow:hover { background: #fde047; }
+.btn-red {
+  background: var(--accent-red);
+  color: #fff;
+}
+.btn-red:hover { background: #f87171; }
+
+/* Table */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+th, td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  white-space: nowrap;
+}
+.dark th, .dark td {
+  border-color: #333;
+}
+
+/* Balance */
+.balance {
+  font-size: 2rem;
+  font-weight: 700;
+}
+.balance.positive { color: #16a34a; }
+.balance.negative { color: #ef4444; }
+
+/* Form Layout */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.form-full { grid-column: 1 / span 2; }
+
+@media (max-width: 1024px) {
+  .container { padding: 0 1rem; }
+}
+
+@media (max-width: 768px) {
+  header { flex-direction: column; gap: 0.5rem; text-align: center; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-full { grid-column: 1; }
+  .balance { font-size: 1.8rem; }
+  table { min-width: 600px; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 1rem; }
+  .balance { font-size: 1.6rem; }
+  .btn { font-size: 0.9rem; padding: 0.5rem; }
+  th, td { font-size: 0.85rem; }
 }

@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>K3M Finance Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body class="min-h-screen flex flex-col">
 
   <!-- Header -->
   <header class="w-full p-4 flex justify-between items-center">
-    <h1 class="text-lg font-bold">💼 ระบบบันทึกเงิน | K3M Production</h1>
-    <button id="toggleMode">🌙 โหมดมืด</button>
+    <img src="k3m.PNG" alt="img" style="height: 100px; width: 100px; border-radius: 10%; text-align: left;">
+    <h1 class="text-lg font-bold">ระบบบันทึกเงิน | K3M Production</h1> <button id="toggleMode" class="border px-3 py-1 rounded">🌙 โหมดมืด</button>
   </header>
 
-  <main class="container mx-auto px-4 py-6 space-y-8">
+  <main class="container mx-auto py-6 space-y-8">
 
-    <!-- 💰 ยอดคงเหลือ -->
+<!-- 💰 ยอดคงเหลือ -->
     <section class="text-center">
       <h2 class="text-lg font-semibold mb-2">ยอดเงินคงเหลือ</h2>
       <p id="balanceText" class="balance">กำลังโหลด...</p>
@@ -27,18 +27,20 @@
     <!-- 📜 ประวัติธุรกรรม -->
     <section class="card">
       <h3 class="font-bold mb-3">📜 ประวัติธุรกรรมล่าสุด</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>วันที่</th>
-            <th>ชื่อ</th>
-            <th>ประเภท</th>
-            <th>จำนวนเงิน</th>
-            <th>รายละเอียด</th>
-          </tr>
-        </thead>
-        <tbody id="historyBody"></tbody>
-      </table>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>วันที่</th>
+              <th>ชื่อ</th>
+              <th>ประเภท</th>
+              <th>จำนวนเงิน</th>
+              <th>รายละเอียด</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
     </section>
 
     <!-- 👥 สรุปยอดรายบุคคล -->
@@ -50,46 +52,48 @@
     <!-- ➕ ฟอร์มเพิ่มเงิน -->
     <section class="card">
       <h3 class="font-bold mb-3 text-yellow-600">เพิ่มเงินเข้า</h3>
-      <form id="incomeForm" class="space-y-3">
+      <form id="incomeForm" class="form-grid">
         <select id="incomeName">
           <option value="">-- เลือกผู้เพิ่มเงิน --</option>
-          <option>คุณานนต์ มนตรีกานนท์ ()</option>
-          <option>นนท์วริศ ภิญโญหิรัญรัตน์ ()</option>
-          <option>นพอัปสร อ้นทอง ()</option>
-          <option>นันธิดา น้อยพันธ์ ()</option>
-          <option>พัชรนันท์ วิโรจน์ชีวัน ()</option>
-          <option>พิธานนท์ น่วมเศรษฐี ()</option>
-          <option>รัชศักดิ์ ชลอุดมกุล ()</option>
-          <option>วรพล ผลอินทร์ ()</option>
-          <option>อิทธิฤทธิ์ กุนศิริ (มิกซ์)</option>
+          <option>คุณานนต์ มนตรีกานนท์</option>
+          <option>นนท์วริศ ภิญโญหิรัญรัตน์</option>
+          <option>นพอัปสร อ้นทอง</option>
+          <option>นันธิดา น้อยพันธ์</option>
+          <option>พัชรนันท์ วิโรจน์ชีวัน</option>
+          <option>พิธานนท์ น่วมเศรษฐี</option>
+          <option>รัชศักดิ์ ชลอุดมกุล</option>
+          <option>วรพล ผลอินทร์</option>
+          <option>อิทธิฤทธิ์ กุนศิริ</option>
         </select>
+
         <input type="number" id="incomeAmount" placeholder="จำนวนเงิน (บาท)">
-        <textarea id="incomeDesc" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
-        <input type="file" id="incomeImage" accept="image/*">
-        <button type="submit" class="btn btn-yellow">บันทึกเงินเข้า</button>
+        <textarea id="incomeDesc" placeholder="รายละเอียดเพิ่มเติม..." class="form-full"></textarea>
+        <input type="file" id="incomeImage" accept="image/*" class="form-full">
+        <button type="submit" class="btn btn-yellow form-full">บันทึกเงินเข้า</button>
       </form>
     </section>
 
     <!-- ➖ ฟอร์มเอาเงินออก -->
     <section class="card">
       <h3 class="font-bold mb-3 text-red-500">เอาเงินออก</h3>
-      <form id="expenseForm" class="space-y-3">
+      <form id="expenseForm" class="form-grid">
         <select id="expenseName">
-          <option value="">-- เลือกผู้ใช้เงิน --</option>
-          <option>คุณานนต์ มนตรีกานนท์ ()</option>
-          <option>นนท์วริศ ภิญโญหิรัญรัตน์ ()</option>
-          <option>นพอัปสร อ้นทอง ()</option>
-          <option>นันธิดา น้อยพันธ์ ()</option>
-          <option>พัชรนันท์ วิโรจน์ชีวัน ()</option>
-          <option>พิธานนท์ น่วมเศรษฐี ()</option>
-          <option>รัชศักดิ์ ชลอุดมกุล ()</option>
-          <option>วรพล ผลอินทร์ ()</option>
-          <option>อิทธิฤทธิ์ กุนศิริ (มิกซ์)</option>
+          <option value="">-- เลือกผู้เพิ่มเงิน --</option>
+          <option>คุณานนต์ มนตรีกานนท์</option>
+          <option>นนท์วริศ ภิญโญหิรัญรัตน์</option>
+          <option>นพอัปสร อ้นทอง</option>
+          <option>นันธิดา น้อยพันธ์</option>
+          <option>พัชรนันท์ วิโรจน์ชีวัน</option>
+          <option>พิธานนท์ น่วมเศรษฐี</option>
+          <option>รัชศักดิ์ ชลอุดมกุล</option>
+          <option>วรพล ผลอินทร์</option>
+          <option>อิทธิฤทธิ์ กุนศิริ</option>
         </select>
+
         <input type="number" id="expenseAmount" placeholder="จำนวนเงิน (บาท)">
-        <textarea id="expenseDesc" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
-        <input type="file" id="expenseImage" accept="image/*">
-        <button type="submit" class="btn btn-red">บันทึกเงินออก</button>
+        <textarea id="expenseDesc" placeholder="รายละเอียดเพิ่มเติม..." class="form-full"></textarea>
+        <input type="file" id="expenseImage" accept="image/*" class="form-full">
+        <button type="submit" class="btn btn-red form-full">บันทึกเงินออก</button>
       </form>
     </section>
 
@@ -100,14 +104,27 @@
   </footer>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqbNPHG6xLiLJQ8Zgvm60s7PQcSahobKl4YpXWIN1ceOcZd5j-lbKhKJ6tbY2Y49FEdw/exec"; // ใส่ URL Apps Script
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqbNPHG6xLiLJQ8Zgvm60s7PQcSahobKl4YpXWIN1ceOcZd5j-lbKhKJ6tbY2Y49FEdw/exec";
 
-    // 🌗 Dark/Light Toggle
+    // 🌗 Toggle Dark/Light
     const toggleBtn = document.getElementById("toggleMode");
     toggleBtn.addEventListener("click", () => {
       document.documentElement.classList.toggle("dark");
-      toggleBtn.textContent = document.documentElement.classList.contains("dark") ? "☀️ โหมดสว่าง" : "🌙 โหมดมืด";
+      toggleBtn.textContent = document.documentElement.classList.contains("dark")
+        ? "☀️ โหมดสว่าง"
+        : "🌙 โหมดมืด";
     });
+
+    // 📅 แปลงเวลา
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = String(d.getFullYear()).slice(-2);
+      const hours = String(d.getHours()).padStart(2, '0');
+      const mins = String(d.getMinutes()).padStart(2, '0');
+      return `${day}/${month}/${year} ${hours}:${mins}`;
+    }
 
     async function loadSummary() {
       const res = await fetch(SCRIPT_URL + "?action=getSummary");
@@ -136,7 +153,7 @@
         const color = row.type === "เงินเข้า" ? "text-green-600" : "text-red-500";
         body.innerHTML += `
           <tr>
-            <td>${row.date}</td>
+            <td>${formatDate(row.date)}</td>
             <td>${row.name}</td>
             <td class="${color}">${row.type}</td>
             <td>${Number(row.amount).toLocaleString()}</td>
@@ -150,7 +167,6 @@
       const amount = document.getElementById(formId + "Amount").value;
       const desc = document.getElementById(formId + "Desc").value;
       const file = document.getElementById(formId + "Image").files[0];
-
       if (!name || !amount) return alert("กรุณากรอกข้อมูลให้ครบ");
 
       const formData = new FormData();
@@ -162,7 +178,6 @@
 
       const res = await fetch(SCRIPT_URL, { method: "POST", body: formData });
       const result = await res.json();
-
       if (result.result === "success") {
         alert("✅ บันทึกสำเร็จ!");
         loadSummary();
