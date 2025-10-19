@@ -66,7 +66,7 @@
           <option>อิทธิฤทธิ์ กุนศิริ</option>
         </select>
 
-        <input type="number" id="incomeAmount" placeholder="จำนวนเงิน (บาท)">
+        <input type="number" id="incomeAmount" step="0.01" min="0" placeholder="จำนวนเงิน (บาท)">
         <textarea id="incomeDesc" placeholder="รายละเอียดเพิ่มเติม..." class="form-full"></textarea>
         <input type="file" id="incomeImage" accept="image/*" class="form-full">
         <button type="submit" class="btn btn-yellow form-full">บันทึกเงินเข้า</button>
@@ -90,7 +90,7 @@
           <option>อิทธิฤทธิ์ กุนศิริ</option>
         </select>
 
-        <input type="number" id="expenseAmount" placeholder="จำนวนเงิน (บาท)">
+        <input type="number" id="expenseAmount" step="0.01" placeholder="จำนวนเงิน (บาท)">
         <textarea id="expenseDesc" placeholder="รายละเอียดเพิ่มเติม..." class="form-full"></textarea>
         <input type="file" id="expenseImage" accept="image/*" class="form-full">
         <button type="submit" class="btn btn-red form-full">บันทึกเงินออก</button>
@@ -131,7 +131,7 @@
       const data = await res.json();
       const balance = (data.income || 0) - (data.expense || 0);
       const balanceEl = document.getElementById("balanceText");
-      balanceEl.textContent = balance.toLocaleString() + " บาท";
+      balanceEl.textContent = balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " บาท";
       balanceEl.className = "balance " + (balance >= 0 ? "positive" : "negative");
 
       const summaryDiv = document.getElementById("personSummary");
@@ -139,8 +139,10 @@
       Object.entries(data.persons || {}).forEach(([name, total]) => {
         const color = total >= 0 ? "text-green-600" : "text-red-500";
         summaryDiv.innerHTML += `<div class="border p-2 rounded text-sm flex justify-between dark:border-gray-700">
-          <span>${name}</span><span class="${color}">${total.toLocaleString()} บาท</span>
-        </div>`;
+  <span>${name}</span>
+  <span class="${color}">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท</span>
+</div>`;
+
       });
     }
 
@@ -156,7 +158,7 @@
             <td>${formatDate(row.date)}</td>
             <td>${row.name}</td>
             <td class="${color}">${row.type}</td>
-            <td>${Number(row.amount).toLocaleString()}</td>
+            <td>${Number(row.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             <td>${row.desc}</td>
           </tr>`;
       });
