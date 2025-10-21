@@ -10,6 +10,14 @@
 
 <body class="min-h-screen flex flex-col">
 
+  <!-- Loader Overlay -->
+  <div id="loader" class="loader-overlay hidden">
+    <div class="loader-content">
+      <div class="spinner"></div>
+      <p class="mt-4 text-white">กำลังดำเนินการ...</p>
+    </div>
+  </div>
+
   <!-- Header -->
   <header class="w-full p-4 flex justify-between items-center">
     <img src="k3m.PNG" alt="img" style="height: 50px; width: 50px; border-radius: 10%; text-align: left;">
@@ -18,7 +26,7 @@
 
   <main class="container mx-auto py-6 space-y-8">
 
-<!-- 💰 ยอดคงเหลือ -->
+    <!-- 💰 ยอดคงเหลือ -->
     <section class="text-center">
       <h2 class="text-lg font-semibold mb-2">ยอดเงินคงเหลือ</h2>
       <p id="balanceText" class="balance">กำลังโหลด...</p>
@@ -78,7 +86,7 @@
       <h3 class="font-bold mb-3 text-red-500">เอาเงินออก</h3>
       <form id="expenseForm" class="form-grid">
         <select id="expenseName">
-          <option value="">-- เลือกผู้เพิ่มเงิน --</option>
+          <option value="">-- เลือกผู้เอาเงินออก --</option>
           <option>คุณานนต์ มนตรีกานนท์</option>
           <option>นนท์วริศ ภิญโญหิรัญรัตน์</option>
           <option>นพอัปสร อ้นทอง</option>
@@ -104,7 +112,12 @@
   </footer>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqbNPHG6xLiLJQ8Zgvm60s7PQcSahobKl4YpXWIN1ceOcZd5j-lbKhKJ6tbY2Y49FEdw/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJpbNLZb-BqFZc8rXY_1FuQBy6-z74KtBzpPwNW1VoXItNT64O-nvzyukLMuM3jirFqA/exec";
+    const loader = document.getElementById('loader');
+
+    // --- Loader Functions ---
+    const showLoader = () => loader.classList.remove('hidden');
+    const hideLoader = () => loader.classList.add('hidden');
 
     // 🌗 Toggle Dark/Light
     const toggleBtn = document.getElementById("toggleMode");
@@ -117,6 +130,7 @@
 
     // 📅 แปลงเวลา
     function formatDate(dateStr) {
+      if (!dateStr) return '';
       const d = new Date(dateStr);
       const day = String(d.getDate()).padStart(2, '0');
       const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -139,10 +153,9 @@
       Object.entries(data.persons || {}).forEach(([name, total]) => {
         const color = total >= 0 ? "text-green-600" : "text-red-500";
         summaryDiv.innerHTML += `<div class="border p-2 rounded text-sm flex justify-between dark:border-gray-700">
-  <span>${name}</span>
-  <span class="${color}">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท</span>
-</div>`;
-
+          <span>${name}</span>
+          <span class="${color}">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท</span>
+        </div>`;
       });
     }
 
@@ -165,33 +178,62 @@
     }
 
     async function submitForm(formId, actionType) {
+      const form = document.getElementById(formId + "Form");
       const name = document.getElementById(formId + "Name").value;
       const amount = document.getElementById(formId + "Amount").value;
       const desc = document.getElementById(formId + "Desc").value;
       const file = document.getElementById(formId + "Image").files[0];
-      if (!name || !amount) return alert("กรุณากรอกข้อมูลให้ครบ");
+      if (!name || !amount) {
+        alert("กรุณากรอกข้อมูลให้ครบ");
+        return;
+      }
 
-      const formData = new FormData();
-      formData.append("action", actionType);
-      formData.append("personName", name);
-      formData.append("amount", amount);
-      formData.append("description", desc);
-      if (file) formData.append("image", file);
+      showLoader();
 
-      const res = await fetch(SCRIPT_URL, { method: "POST", body: formData });
-      const result = await res.json();
-      if (result.result === "success") {
-        alert("✅ บันทึกสำเร็จ!");
-        loadSummary();
-        loadHistory();
-      } else alert("❌ " + result.message);
+      try {
+        const formData = new FormData();
+        formData.append("action", actionType);
+        formData.append("personName", name);
+        formData.append("amount", amount);
+        formData.append("description", desc);
+        if (file) formData.append("image", file);
+
+        const res = await fetch(SCRIPT_URL, { method: "POST", body: formData });
+        const result = await res.json();
+
+        if (result.result === "success") {
+          alert("✅ บันทึกสำเร็จ!");
+          form.reset();
+          await Promise.all([loadSummary(), loadHistory()]);
+        } else {
+          alert("❌ " + result.message);
+        }
+      } catch (error) {
+        console.error("Submit Error:", error);
+        alert("❌ เกิดข้อผิดพลาดในการส่งข้อมูล");
+      } finally {
+        hideLoader();
+      }
     }
 
     document.getElementById("incomeForm").onsubmit = e => { e.preventDefault(); submitForm("income", "addIncome"); };
     document.getElementById("expenseForm").onsubmit = e => { e.preventDefault(); submitForm("expense", "addExpense"); };
 
-    loadSummary();
-    loadHistory();
+    // --- Initial Page Load ---
+    async function initialLoad() {
+      showLoader();
+      try {
+        await Promise.all([loadSummary(), loadHistory()]);
+      } catch (error) {
+        console.error("Initial Load Error:", error);
+        document.getElementById("balanceText").textContent = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+        document.getElementById("balanceText").classList.add("negative");
+      } finally {
+        hideLoader();
+      }
+    }
+
+    initialLoad();
   </script>
 </body>
 </html>
