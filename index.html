@@ -45,31 +45,11 @@
         </button>
       </div>
 
-      <div class="mb-4">
+      <div class="mb-2">
         <input type="number" id="qrAmount" class="text-center font-bold text-2xl bg-zinc-900 text-yellow-400 border border-zinc-600 rounded p-2 w-full focus:outline-none focus:border-yellow-500" placeholder="ระบุยอดเงิน" step="0.01" oninput="refreshQR()">
       </div>
-
-      <div class="text-left">
-        <p class="text-xs text-gray-400 mb-2">🚀 ทางลัดเข้าแอป (กดแล้ววางเบอร์เพื่อโอน)</p>
-        <div class="grid grid-cols-4 gap-2">
-          <a href="kplus://" class="flex flex-col items-center bg-zinc-700 hover:bg-green-600 p-2 rounded transition group">
-            <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-xs shadow">K</div>
-            <span class="text-[10px] mt-1 text-gray-300 group-hover:text-white">KBANK</span>
-          </a>
-          <a href="scbeasy://" class="flex flex-col items-center bg-zinc-700 hover:bg-purple-600 p-2 rounded transition group">
-            <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-xs shadow">S</div>
-            <span class="text-[10px] mt-1 text-gray-300 group-hover:text-white">SCB</span>
-          </a>
-          <a href="ktbnext://" class="flex flex-col items-center bg-zinc-700 hover:bg-blue-500 p-2 rounded transition group">
-            <div class="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center text-white font-bold text-xs shadow">K</div>
-            <span class="text-[10px] mt-1 text-gray-300 group-hover:text-white">KTB</span>
-          </a>
-          <a href="ttbtouch://" class="flex flex-col items-center bg-zinc-700 hover:bg-blue-700 p-2 rounded transition group">
-            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow">T</div>
-            <span class="text-[10px] mt-1 text-gray-300 group-hover:text-white">ttb</span>
-          </a>
-        </div>
-      </div>
+      
+      <p class="text-xs text-gray-500 mt-2">*สแกน QR หรือก๊อปปี้เบอร์เพื่อโอนเงิน</p>
 
     </div>
   </div>
@@ -189,10 +169,10 @@
       
       currentQRTarget = member;
       document.getElementById("qrTargetName").textContent = name;
-      document.getElementById("qrTargetID").textContent = formatPhoneNumber(member.id); // แสดงเบอร์
+      document.getElementById("qrTargetID").textContent = formatPhoneNumber(member.id);
       
       const input = document.getElementById("qrAmount");
-      input.value = ""; // เคลียร์ค่า
+      input.value = ""; 
       
       refreshQR(); 
       document.getElementById("qrModal").classList.remove("hidden");
@@ -225,7 +205,6 @@
       });
     }
 
-    // ฟังก์ชันจัดรูปแบบเบอร์โทรให้สวยงาม (08x-xxx-xxxx)
     function formatPhoneNumber(phoneNumberString) {
       const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
       const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
