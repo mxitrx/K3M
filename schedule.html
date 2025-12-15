@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K3M Schedule</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col bg-[#171717] text-white">
+
+  <div id="loader" class="fixed inset-0 bg-black/80 z-[99] flex justify-center items-center hidden">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500 mx-auto"></div>
+      <p class="mt-4 text-white">กำลังโหลดข้อมูล...</p>
+    </div>
+  </div>
+
+  <header class="p-4 bg-zinc-900/95 border-b border-zinc-700 sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <h1 class="text-lg font-bold text-yellow-500">📅 ตารางงาน K3M</h1>
+      </div>
+      <a href="index.html" class="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 px-3 py-2 rounded-lg transition text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <span>💰 บัญชี</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="container mx-auto py-6 px-4 space-y-6">
+
+    <section class="bg-zinc-900 border border-zinc-700 rounded-xl p-4">
+      <div class="flex justify-between items-center mb-4">
+        <h2 id="calendarTitle" class="text-lg font-bold">ปฏิทินงาน</h2>
+      </div>
+      
+      <div class="grid grid-cols-7 gap-1 text-center mb-2">
+         <div class="text-gray-500 text-xs">อา</div>
+         <div class="text-gray-500 text-xs">จ</div>
+         <div class="text-gray-500 text-xs">อ</div>
+         <div class="text-gray-500 text-xs">พ</div>
+         <div class="text-gray-500 text-xs">พฤ</div>
+         <div class="text-gray-500 text-xs">ศ</div>
+         <div class="text-gray-500 text-xs">ส</div>
+      </div>
+      <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-center text-sm">
+        </div>
+    </section>
+
+    <section>
+      <div class="flex justify-between items-end mb-4">
+        <h2 class="text-xl font-bold text-white">คิวงาน</h2>
+        <span class="text-xs text-gray-400">เรียงตามวันที่</span>
+      </div>
+      
+      <div id="jobList" class="space-y-3">
+        <p class="text-center text-gray-500 py-8">กำลังโหลดรายการงาน...</p>
+      </div>
+    </section>
+
+    <section class="bg-zinc-900 border border-zinc-700 rounded-xl p-5 shadow-lg">
+      <h3 class="font-bold text-lg mb-4 text-blue-400 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        ลงคิวงานใหม่
+      </h3>
+      
+      <form id="jobForm" class="grid grid-cols-1 gap-4">
+        <div>
+          <label class="text-xs text-gray-400">ชื่องาน / โปรเจกต์</label>
+          <input type="text" id="jobName" placeholder="" class="w-full bg-zinc-800 border border-zinc-600 rounded p-2 text-white focus:border-blue-500 outline-none" required>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs text-gray-400">วันที่เริ่ม</label>
+            <input type="date" id="jobDate" class="w-full bg-zinc-800 border border-zinc-600 rounded p-2 text-white focus:border-blue-500 outline-none" required>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400">เวลา (นัดหมาย)</label>
+            <input type="time" id="jobTime" class="w-full bg-zinc-800 border border-zinc-600 rounded p-2 text-white focus:border-blue-500 outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-400">สถานที่ / Location</label>
+          <input type="text" id="jobLocation" placeholder="" class="w-full bg-zinc-800 border border-zinc-600 rounded p-2 text-white focus:border-blue-500 outline-none">
+        </div>
+
+        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg mt-2 transition shadow-lg shadow-blue-900/50">
+          บันทึกคิวงาน
+        </button>
+      </form>
+    </section>
+
+  </main>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymI1_ni3RREtAMNPvvMwcVFYGkPeWlq1w4GD1YU1b5-OC3lx3tSBb5w9puDotaxiEcWw/exec";
+
+    const showLoader = () => document.getElementById('loader').classList.remove('hidden');
+    const hideLoader = () => document.getElementById('loader').classList.add('hidden');
+
+    function formatDateThai(dateStr) {
+      if(!dateStr) return "-";
+      const d = new Date(dateStr);
+      const months = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+      return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()+543}`; 
+    }
+
+    function renderCalendar(jobs) {
+      const date = new Date();
+      const currentMonth = date.getMonth();
+      const currentYear = date.getFullYear();
+      const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+
+      document.getElementById('calendarTitle').textContent = `${thaiMonths[currentMonth]} ${currentYear + 543}`;
+
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = "";
+
+      for (let i = 0; i < firstDay; i++) {
+        grid.innerHTML += `<div></div>`;
+      }
+
+      for (let i = 1; i <= daysInMonth; i++) {
+        const isToday = (i === date.getDate() && currentMonth === new Date().getMonth());
+        
+        // หาว่ามีงานวันนี้ไหม
+        const jobToday = jobs.find(job => {
+          const jobD = new Date(job.date);
+          return jobD.getDate() === i && jobD.getMonth() === currentMonth && jobD.getFullYear() === currentYear;
+        });
+
+        let bgClass = isToday ? "bg-blue-600 text-white font-bold" : "bg-zinc-800 text-gray-300";
+        let dotHtml = "";
+
+        if (jobToday) {
+           // ✅ จุดสีเขียวทุกงาน
+           dotHtml = `<div class="mx-auto mt-1 w-1.5 h-1.5 rounded-full bg-green-500"></div>`;
+           if(!isToday) bgClass = "bg-zinc-700 text-white font-medium border border-zinc-600";
+        }
+
+        grid.innerHTML += `
+          <div class="h-10 flex flex-col justify-center items-center rounded ${bgClass}">
+            <span>${i}</span>
+            ${dotHtml}
+          </div>
+        `;
+      }
+    }
+
+    async function loadJobs() {
+      try {
+        const res = await fetch(SCRIPT_URL + "?action=getJobs");
+        const data = await res.json();
+        const container = document.getElementById("jobList");
+        
+        renderCalendar(data);
+        
+        if(data.length === 0) {
+          container.innerHTML = `<div class="text-center p-6 bg-zinc-800 rounded-lg text-gray-400">ยังไม่มีคิวงาน</div>`;
+          return;
+        }
+
+        data.sort((a, b) => new Date(a.date) - new Date(b.date));
+        container.innerHTML = "";
+        
+        data.forEach(job => {
+          // เช็คว่าเป็นอดีตหรือยัง
+          const isPast = new Date(job.date) < new Date().setHours(0,0,0,0);
+          const opacityClass = isPast ? "opacity-50 grayscale" : "";
+
+          // ✅ แสดงผลแบบเรียบง่าย ไม่แยกสีสถานะ
+          container.innerHTML += `
+            <div class="bg-zinc-800 border-l-4 border-yellow-500 rounded-r-lg p-4 flex gap-4 items-center shadow-md hover:bg-zinc-750 transition ${opacityClass}">
+              <div class="flex flex-col items-center justify-center bg-zinc-900 min-w-[70px] p-2 rounded border border-zinc-700">
+                <span class="text-2xl font-bold text-white">${new Date(job.date).getDate()}</span>
+                <span class="text-xs text-gray-400">${formatDateThai(job.date).split(' ')[1]}</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-start mb-1">
+                  <h4 class="font-bold text-lg text-white truncate pr-2">${job.name}</h4>
+                </div>
+                <div class="text-sm text-gray-300 flex items-center gap-1">
+                  ⏰ ${job.time || '-'} น. | 📍 ${job.location || '-'}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById("jobList").innerHTML = `<p class="text-red-500 text-center">โหลดข้อมูลล้มเหลว</p>`;
+      }
+    }
+
+    document.getElementById("jobForm").onsubmit = async (e) => {
+      e.preventDefault();
+      showLoader();
+      
+      const formData = new FormData();
+      formData.append("action", "addJob");
+      formData.append("jobName", document.getElementById("jobName").value);
+      formData.append("jobDate", document.getElementById("jobDate").value);
+      formData.append("jobTime", document.getElementById("jobTime").value);
+      formData.append("jobLocation", document.getElementById("jobLocation").value);
+      // ✅ ส่งค่าว่างไปแทนสถานะ เพื่อให้ Backend ไม่พัง
+      formData.append("jobStatus", ""); 
+
+      try {
+        await fetch(SCRIPT_URL, { method: "POST", body: formData });
+        alert("✅ ลงคิวงานเรียบร้อย!");
+        document.getElementById("jobForm").reset();
+        loadJobs();
+      } catch (err) {
+        alert("❌ ผิดพลาด: " + err.message);
+      } finally {
+        hideLoader();
+      }
+    };
+
+    loadJobs();
+    document.getElementById('jobDate').valueAsDate = new Date();
+  </script>
+</body>
+</html>
