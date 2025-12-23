@@ -8,19 +8,32 @@
   <script>
     tailwind.config = { darkMode: 'class' }
   </script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    body { font-family: 'Sarabun', sans-serif; }
+    
+    /* ปรับแต่ง input ของ flatpickr ให้เข้ากับ theme */
+    .flatpickr-input {
+      background-color: #27272a !important; /* zinc-800 */
+      border-color: #52525b !important; /* zinc-600 */
+      color: white !important;
+    }
   </style>
 </head>
 
 <body class="min-h-screen flex flex-col bg-[#171717] text-white">
 
-  <div id="loader" class="fixed inset-0 bg-black/80 z-[99] flex justify-center items-center hidden">
-    <div class="text-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500 mx-auto"></div>
-      <p class="mt-4 text-white">กำลังโหลดข้อมูล...</p>
+  <div id="loader" class="loader-overlay hidden">
+    <div class="loader-content">
+      <div class="spinner"></div>
+      <p class="mt-4 text-white">กำลังดำเนินการ...</p>
     </div>
   </div>
 
@@ -53,7 +66,7 @@
          <div class="text-gray-500 text-xs">ส</div>
       </div>
       <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-center text-sm">
-        </div>
+      </div>
     </section>
 
     <section>
@@ -82,11 +95,11 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="text-xs text-gray-400">วันที่เริ่ม</label>
-            <input type="date" id="jobDate" class="w-full bg-zinc-800 border border-zinc-600 rounded p-2 text-white focus:border-blue-500 outline-none" required>
+            <input type="text" id="jobDate" class="w-full bg-zinc-800 border border-zinc-600 rounded p-2 text-white focus:border-blue-500 outline-none" placeholder="เลือกวันที่" required>
           </div>
           <div>
-            <label class="text-xs text-gray-400">เวลา (นัดหมาย)</label>
-            <input type="time" id="jobTime" class="w-full bg-zinc-800 border border-zinc-600 rounded p-2 text-white focus:border-blue-500 outline-none">
+            <label class="text-xs text-gray-400">เวลานัดหมาย</label>
+            <input type="text" id="jobTime" placeholder="เช่น 10.00" class="w-full bg-zinc-800 border border-zinc-600 rounded p-2 text-white focus:border-blue-500 outline-none">
           </div>
         </div>
 
@@ -103,17 +116,33 @@
 
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
+
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymI1_ni3RREtAMNPvvMwcVFYGkPeWlq1w4GD1YU1b5-OC3lx3tSBb5w9puDotaxiEcWw/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdZf-p40n7X--OMnjqMvw3KuqzwdalH1nQ53pl1iwjjiKPy4Zc1k-GVP_w8ukxoJ_JwA/exec";
 
     const showLoader = () => document.getElementById('loader').classList.remove('hidden');
     const hideLoader = () => document.getElementById('loader').classList.add('hidden');
 
-    function formatDateThai(dateStr) {
+    // ✅ 4. ตั้งค่า Flatpickr ให้แสดงผลเป็น dd/mm/yy
+    const datePicker = flatpickr("#jobDate", {
+        locale: "th",             // ใช้ภาษาไทย
+        dateFormat: "Y-m-d",      // ค่าจริงที่ส่งไปหลังบ้าน (Format มาตรฐาน Database)
+        altInput: true,           // เปิดโหมดแสดงผลแยกกับค่าจริง
+        altFormat: "d/m/y",       // ✅ รูปแบบที่ตาเห็น: 23/12/25 (dd/mm/yy)
+        defaultDate: new Date(),  // ตั้งค่าเริ่มต้นเป็นวันนี้
+        disableMobile: "true"     // บังคับใช้ Theme นี้แม้ในมือถือ (ถ้าไม่ใส่ มือถือจะเด้งเป็นตัวหมุนๆ ของเครื่อง)
+    });
+
+    // ฟังก์ชันเดิม: ฟอร์แมตวันที่เป็น DD/MM/YY (ปีพุทธศักราช) สำหรับแสดงในรายการ
+    function formatDateShort(dateStr) {
       if(!dateStr) return "-";
       const d = new Date(dateStr);
-      const months = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
-      return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()+543}`; 
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = String(d.getFullYear() + 543).slice(-2); 
+      return `${day}/${month}/${year}`;
     }
 
     function renderCalendar(jobs) {
@@ -137,7 +166,6 @@
       for (let i = 1; i <= daysInMonth; i++) {
         const isToday = (i === date.getDate() && currentMonth === new Date().getMonth());
         
-        // หาว่ามีงานวันนี้ไหม
         const jobToday = jobs.find(job => {
           const jobD = new Date(job.date);
           return jobD.getDate() === i && jobD.getMonth() === currentMonth && jobD.getFullYear() === currentYear;
@@ -147,7 +175,6 @@
         let dotHtml = "";
 
         if (jobToday) {
-           // ✅ จุดสีเขียวทุกงาน
            dotHtml = `<div class="mx-auto mt-1 w-1.5 h-1.5 rounded-full bg-green-500"></div>`;
            if(!isToday) bgClass = "bg-zinc-700 text-white font-medium border border-zinc-600";
         }
@@ -178,23 +205,22 @@
         container.innerHTML = "";
         
         data.forEach(job => {
-          // เช็คว่าเป็นอดีตหรือยัง
           const isPast = new Date(job.date) < new Date().setHours(0,0,0,0);
           const opacityClass = isPast ? "opacity-50 grayscale" : "";
+          
+          const dateDisplay = formatDateShort(job.date);
 
-          // ✅ แสดงผลแบบเรียบง่าย ไม่แยกสีสถานะ
           container.innerHTML += `
             <div class="bg-zinc-800 border-l-4 border-yellow-500 rounded-r-lg p-4 flex gap-4 items-center shadow-md hover:bg-zinc-750 transition ${opacityClass}">
               <div class="flex flex-col items-center justify-center bg-zinc-900 min-w-[70px] p-2 rounded border border-zinc-700">
-                <span class="text-2xl font-bold text-white">${new Date(job.date).getDate()}</span>
-                <span class="text-xs text-gray-400">${formatDateThai(job.date).split(' ')[1]}</span>
+                <span class="text-xl font-bold text-white">${dateDisplay}</span>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex justify-between items-start mb-1">
                   <h4 class="font-bold text-lg text-white truncate pr-2">${job.name}</h4>
                 </div>
                 <div class="text-sm text-gray-300 flex items-center gap-1">
-                  ⏰ ${job.time || '-'} น. | 📍 ${job.location || '-'}
+                  ⏰ ${job.time || '-'} | 📍 ${job.location || '-'}
                 </div>
               </div>
             </div>
@@ -214,16 +240,20 @@
       const formData = new FormData();
       formData.append("action", "addJob");
       formData.append("jobName", document.getElementById("jobName").value);
-      formData.append("jobDate", document.getElementById("jobDate").value);
+      // Flatpickr จะอัปเดต value ใน input hidden ให้เป็น YYYY-MM-DD อัตโนมัติเมื่อกดเลือก
+      formData.append("jobDate", document.getElementById("jobDate").value); 
       formData.append("jobTime", document.getElementById("jobTime").value);
       formData.append("jobLocation", document.getElementById("jobLocation").value);
-      // ✅ ส่งค่าว่างไปแทนสถานะ เพื่อให้ Backend ไม่พัง
-      formData.append("jobStatus", ""); 
+      formData.append("jobStatus", "Pending"); 
 
       try {
         await fetch(SCRIPT_URL, { method: "POST", body: formData });
         alert("✅ ลงคิวงานเรียบร้อย!");
         document.getElementById("jobForm").reset();
+        
+        // Reset วันที่เป็นวันนี้
+        datePicker.setDate(new Date());
+        
         loadJobs();
       } catch (err) {
         alert("❌ ผิดพลาด: " + err.message);
@@ -233,7 +263,8 @@
     };
 
     loadJobs();
-    document.getElementById('jobDate').valueAsDate = new Date();
+    // ไม่ต้องใช้บรรทัดนี้แล้วเพราะ Flatpickr จัดการ defaultDate ให้แล้ว
+    // document.getElementById('jobDate').valueAsDate = new Date(); 
   </script>
 </body>
 </html>
